@@ -13,6 +13,9 @@ ini_set('display_errors', 1);
 
 //echo "My surname is Kolesnikova";
 
+// Задание 1
+
+
 $age=28;
 $name="Алина";
 
@@ -21,11 +24,18 @@ echo 'Мне '.$age.' лет <br>';
 
 //print_r($_SERVER);
 
+unset($age);
+unset($name);
+
 // Задание 2
 
 define('town','Москва');
 
-echo '<p>'.town.'</p>';
+if (defined('town')) {
+    echo '<p>'.town.'</p>';
+}
+
+
 
 $town='Ливерпуль';
 
