@@ -40,7 +40,6 @@ sort($date);
 
 for ($i=0; $i<=4; $i++) {
     $date2[$i]=  getdate($date[$i]);
-    //var_dump($date[$i]);
 }
 
 $selected=array_pop($date2);
@@ -48,7 +47,6 @@ $selected=array_pop($date2);
 echo '<br><p>$selected is '.date("d.m.y H:i:s",$selected[0]).'</p>';
 
 date_default_timezone_set('America/New_York');
-//var_dump(date("d.m.y H:i:s",time()+60*60));
 echo '<p> Time in New York is '.date("d.m.y H:i:s",time()+60*60).'</p>';
 
 
