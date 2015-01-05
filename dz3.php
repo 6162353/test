@@ -37,14 +37,9 @@ echo '<p> the greatest month is '.max($date_month).'</p>';
 
 sort($date);
 
+$selected=array_pop($date);
 
-for ($i=0; $i<=4; $i++) {
-    $date2[$i]=  getdate($date[$i]);
-}
-
-$selected=array_pop($date2);
-
-echo '<br><p>$selected is '.date("d.m.y H:i:s",$selected[0]).'</p>';
+echo '<br><p>$selected is '.date("d.m.y H:i:s",$selected).'</p>';
 
 date_default_timezone_set('America/New_York');
 echo '<p> Time in New York is '.date("d.m.y H:i:s",time()+60*60).'</p>';
