@@ -10,6 +10,8 @@ $otladka=0;
 
 header('Content-type: text/html; charset=utf-8');
 
+if (!$otladka) {
+
 $ini_string='
 [игрушка мягкая мишка белый]
 цена = '.  mt_rand(1, 10).';
@@ -30,6 +32,32 @@ diskont = diskont'.  mt_rand(0, 2).';
 diskont = diskont'.  mt_rand(0, 2).';
 
 ';
+
+}
+
+if ($otladka) {
+
+$ini_string='
+[игрушка мягкая мишка белый]
+цена = '.  mt_rand(1, 10).';
+количество заказано = '.  mt_rand(1, 10).';
+осталось на складе = 0;
+diskont = diskont'.  mt_rand(0, 2).';
+    
+[одежда детская куртка синяя синтепон]
+цена = '.  mt_rand(1, 10).';
+количество заказано = 0;
+осталось на складе = '.  mt_rand(0, 10).';
+diskont = diskont0'.';
+    
+[игрушка детская велосипед]
+цена = '.  mt_rand(1, 10).';
+количество заказано = '.  mt_rand(3, 10).';
+осталось на складе = '.  mt_rand(3, 10).';
+diskont = diskont'.  mt_rand(0, 2).';
+';
+
+}
 
 $bd=parse_ini_string($ini_string, true);
 //print_r($bd);
@@ -126,26 +154,6 @@ for ($i=0;  $i<$amount1 ; $i++ ) {
     
     $amount_itogo[key($bd)]=v_nalichii($elem['количество заказано'],$elem['осталось на складе']);
 
-    
-    
-if ($elem['количество заказано']!='0') {
- 
-    echo '<tr>'
-        .'<td width="50%">'.key($bd).'</td><td width="10%">'.$elem['цена'].' руб.</td>'
-        .'<td width="10%">'.$elem['количество заказано'].'</td>'
-        .'<td width="10%">'.$elem['осталось на складе'].'</td>';
-    
-
-    // для вывода уведомлений об отсутствии товара, запоминаем каких товаров не оказалось на складе
-    
-        if ($elem['осталось на складе']==0) {
-            array_push($net_na_sklade,key($bd));
-        }
-    
-
-    
-        
-    
     // скидку реализуем через switch, если нужно что-то добавлять - это проще, чем if
     //И нас есть такое условие, использовать этот оператор
     
@@ -156,60 +164,37 @@ if ($elem['количество заказано']!='0') {
         
         case 'diskont2':
             $skidka_itogo[key($bd)]=0.2;
-            echo '<td width="10%">20%</td>';
+            //echo '<td width="10%">20%</td>';
             break;
         
         case 'diskont1':
             $skidka_itogo[key($bd)]=0.1;
-            echo '<td width="10%">10%</td>';
+            //echo '<td width="10%">10%</td>';
             break;
         
         case 'diskont0':
             $skidka_itogo[key($bd)]=0;
-            echo '<td width="10%">Нет </td>';
+            //echo '<td width="10%">Нет </td>';
             break;    
         
     }
     
     
+if ($elem['количество заказано']!='0') {
+ 
+    echo '<tr>'
+        .'<td width="50%">'.key($bd).'</td><td width="10%">'.$elem['цена'].' руб.</td>'
+        .'<td width="10%">'.$elem['количество заказано'].'</td>'
+        .'<td width="10%">'.$elem['осталось на складе'].'</td>'
+        . '<td width="10%">'.v_prozenti_str($skidka_itogo[key($bd)]).'</td>';
     
-    /*
-        if ($elem['diskont']=='diskont0') {
-            $skidka=0;
-        echo '<td width="10%">0%</td>';
-            }
-        elseif ($elem['diskont']=='diskont1') {
-            $skidka=0.1;
-        echo '<td width="10%">10%</td>';
-            }
-        else {
-                $skidka=0.2;
-        echo '<td width="10%">20%</td>';
-        }
+
+    // для вывода уведомлений об отсутствии товара, запоминаем каких товаров не оказалось на складе
     
-     * 
-     */
-        
-    /*
-        // Elements for sale
-        $elem_sale=0;
-        if ($elem['количество заказано']<=$elem['осталось на складе']) {
-            
-            $elem_sale=$elem['количество заказано'];
+        if ($elem['осталось на складе']==0) {
+            array_push($net_na_sklade,key($bd));
         }
-        
-        else { 
-            $elem_sale=$elem['осталось на складе'];
-        }
-        
-        if ($otladka) {
-            echo '<p>$elem_sale= '.$elem_sale.'</p>';
-            }
-        
-        $itogo=$elem_sale*($elem['цена']-$elem['цена']*$skidka);
-        echo '<td width="10%">'.$itogo.' руб.</td></tr>';
-        */
-    
+   
     }
     
     $elem=next($bd);
@@ -331,6 +316,9 @@ for ($j=0; $j<$amount2; $j++) {
             
     if ($otladka) {
     echo '<p>$j= '.$j.'</p>';
+    echo '<p>var_dump($zena_itogo_per_elem)= '.var_dump($zena_itogo_per_elem).'</p>';
+    echo '<p>var_dump($zena_itogo= '.var_dump($zena_itogo).'</p>';
+    
     echo '<p>$zena_itogo[$j]= '.$zena_itogo[$j].'</p>';
  
     }
@@ -357,6 +345,14 @@ for ($j=0; $j<$amount2; $j++) {
         .'<td width="10%">'.$economia_itogo[$j].' руб.</td>' 
         .'</tr>'
             ;
+    
+        if ($otladka) {
+            echo '<p>var_dump($skidka_itogo)= '.var_dump($skidka_itogo).'</p>';
+            echo '<p>key($bd)= '.key($bd).'</p>';
+    echo '<p>$v_prozenti_str= '.v_prozenti_str($skidka_itogo[key($bd)]).'</p>';
+    }
+    
+    
     }
     
     $elem=next($bd);
@@ -407,21 +403,20 @@ function v_prozenti_str($skidka)
     
     switch ($skidka) {
         
-        
+        case 0.3:
+            $skidka_str='30%';
+            break;
         
         case 0.2:
             $skidka_str='20%';
-           
-            break;
+           break;
         
         case 0.1:
             $skidka_str='10%';
-            
-            break;
+           break;
         
         case 0:
             $skidka_str='Нет ';
-            
             break;    
         
     }            
