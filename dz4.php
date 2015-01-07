@@ -166,7 +166,7 @@ if ($elem['количество заказано']!='0') {
         
         case 'diskont0':
             $skidka_itogo[key($bd)]=0;
-            echo '<td width="10%"> </td>';
+            echo '<td width="10%">Нет </td>';
             break;    
         
     }
@@ -261,7 +261,7 @@ if ($amount_sklad) {
     
     if ($amount_itogo["игрушка детская велосипед"]>=3) {
         echo '<p><b>Акция!</b></p>';
-    echo '<p>Вы заказали позицию "игрушка детская велосипед" больше 2 штук. Вы получаете скидку на данный товар 30%.</p>';
+    echo '<p>Вы заказали товар "игрушка детская велосипед" более 2 штук. Вы получаете скидку на данный товар 30%.</p>';
         //echo '<p>Вы получаете скидку на данный товар 30%.</p>';
         $skidka_itogo["игрушка детская велосипед"]=0.3;
         
@@ -285,14 +285,21 @@ echo '<br><br><h2>Итого:</h2>';
 //echo '<br>';
 echo '<table border="1" width="960px">'
 . '<tr>'
-        . '<td width="60%">Заказаны следующие наименования</td><td width="10%">Кол-во в наличии</td>'
-        . '<td width="10%">Цена</td><td width="10%">Итоговая скидка</td>'
+        . '<td width="30%">Заказаны следующие наименования</td><td width="10%">Кол-во в наличии</td>'
+        . '<td width="10%">Цена за 1шт.</td>'
+        .'<td width="10%">Итоговая цена без скидки</td>'
+        . '<td width="10%">Итоговая скидка за 1шт.</td>'
+        .'<td width="10%">Итоговая цена за 1шт.</td>'
         .'<td width="10%">Итоговая цена</td>'
+        .'<td width="10%">Итоговая экономия</td>'
 .'</tr>'
         ;
 
 $amount2=count($amount_itogo);
+$zena_itogo_per_elem=array();
 $zena_itogo=array();
+$zena_itogo_without_disckont=array();
+$economia_itogo=array();
 $elem=reset($bd);
 
 if ($otladka) {
@@ -319,19 +326,35 @@ for ($j=0; $j<$amount2; $j++) {
     }
     
     
-    array_push($zena_itogo,$elem['цена']-($elem['цена']*$skidka_itogo[key($bd)]));
-    
+    array_push($zena_itogo_per_elem,$elem['цена']-($elem['цена']*$skidka_itogo[key($bd)]));
+    array_push($zena_itogo,$amount_itogo[key($bd)]*$zena_itogo_per_elem[$j]);
+            
     if ($otladka) {
     echo '<p>$j= '.$j.'</p>';
     echo '<p>$zena_itogo[$j]= '.$zena_itogo[$j].'</p>';
+ 
     }
+    
+    array_push($economia_itogo,($elem['цена']-$zena_itogo_per_elem[$j])*$amount_itogo[key($bd)]);
+    
+        if ($otladka) {
+    echo '<p>$economia_itogo[$j]= '.$economia_itogo[$j].'</p>';
+    }
+    
+    array_push($zena_itogo_without_disckont,$elem['цена']*$amount_itogo[key($bd)]);
+    
+    
     
     if ($amount_itogo[key($bd)]) {
     
     echo '<tr>'
-        . '<td width="60%">'.key($bd).'</td><td width="10%">'.$amount_itogo[key($bd)].'</td>'
-        . '<td width="10%">'.$elem['цена'].'</td><td width="10%">'.$skidka_itogo[key($bd)].'</td>'
-        .'<td width="10%">'.$zena_itogo[$j].' руб.</td>' 
+        . '<td width="30%">'.key($bd).'</td><td width="10%">'.$amount_itogo[key($bd)].'</td>'
+        . '<td width="10%">'.$elem['цена'].'</td>'
+            . '<td width="10%">'.$zena_itogo_without_disckont[$j].'</td>'
+            . '<td width="10%">'.v_prozenti_str($skidka_itogo[key($bd)]).'</td>'
+        .'<td width="10%">'.$zena_itogo_per_elem[$j].' руб.</td>'
+        .'<td width="10%">'.$zena_itogo[$j].' руб.</td>'
+        .'<td width="10%">'.$economia_itogo[$j].' руб.</td>' 
         .'</tr>'
             ;
     }
@@ -343,7 +366,9 @@ for ($j=0; $j<$amount2; $j++) {
 echo '</table>';
 
 echo '<br><p><b>Общее количество товаров: '.array_sum($amount_itogo).' штук.</b></p>';
-echo '<p><b>Общая сумма заказа: '.array_sum($zena_itogo).' руб.</b></p>';
+echo '<p>Общая сумма заказа без скидок: <b>'.array_sum($zena_itogo_without_disckont).' руб.</b></p>';
+echo '<br><p><b>Общая сумма заказа: '.array_sum($zena_itogo).' руб.</b></p>';
+echo '<p><b>Экономия с заказа: '.array_sum($economia_itogo).' руб.</b></p>';
 
 
 /*
@@ -373,6 +398,34 @@ function v_nalichii($zakazano,$na_sklade)
             }
             
     return $elem_sale;
+}
+
+function v_prozenti_str($skidka)
+{   
+    static $skidka_str='';
+    //global $otladka;
+    
+    switch ($skidka) {
+        
+        
+        
+        case 0.2:
+            $skidka_str='20%';
+           
+            break;
+        
+        case 0.1:
+            $skidka_str='10%';
+            
+            break;
+        
+        case 0:
+            $skidka_str='Нет ';
+            
+            break;    
+        
+    }            
+    return $skidka_str;
 }
 
 
