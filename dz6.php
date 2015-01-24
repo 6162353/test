@@ -82,12 +82,6 @@ if (isset($_GET["id"])) {
         show_form($_GET["id"]);
         output_advertise();
         
-        if ($otladka2) { 
-        echo "var_dump(_GET[id])=";
-        echo var_dump($_GET["id"]);
-        
-        }
-        
         
     }
     
@@ -256,18 +250,7 @@ $options=explode('!',$string);
      
      
     echo '</select></div>';
-    
 
-    
-    
-    if ($otladka2) {
-        
-    echo '<br>var_dump($citys)=';    
-     echo var_dump($citys);
-                  echo '<br>Нахождение кода города= ';
-             echo stristr($elem,$_SESSION['advertise'][$id]["location_id"]);
-     
-    }
     
 $string = '     <option value="2028">Берёзовая роща</option>!
     <option value="2018">Гагаринская</option>!
