@@ -1,6 +1,6 @@
 <?php
 session_start();
-ob_start(); 
+
 header('Content-type: text/html; charset=utf-8');
 
 $otladka=0;
@@ -61,27 +61,7 @@ if ($otladka) {
         $_SESSION['advertise']=array();
             }
             
-       if (isset($_POST['form'])) {
-    
-    if ($_POST['form']=="Записать изменения") {
-    
-    // сохранить элемент
-    $_SESSION['advertise'][$_GET['id']]=$_POST;
-   $_POST=null;
-    
-    
-    }
-    
-    if ($_POST['form']=="Назад") {
-    
-    $_POST=null;
-    unset($_GET);
-    header("Location:/test/dz6.php");
-    
-    
-    
-}
-}     
+            
 
 // если гет заполнен, значит запросили удаление или просмотр
 
@@ -165,24 +145,22 @@ if (isset($_GET["id"])) {
 
 elseif (count($_POST)) {    
     
-          if (isset($_POST['main_form'])) {
-            
-            if ($_POST['main_form']=='Добавить') {
-
-                
         array_push($advertise, $_POST);
         $_SESSION['advertise']=$advertise;
+        //$_SESSION['count']++;
+        //header("Location: http://dz5-k6162353.c9.io/test/dz6.php");
+        
+        
 
-        output_begin_html();
-        output_form();
-        output_advertise();
-                
-                
-            }
+//   $_SESSION[date('d.m.Y H:i:s')]=$_POST;
+
             
-            
+                    if ($otladka) { 
+                                //echo '<p><b>var_dump($_SESSION["count"]= </b></p>';
+        //var_dump($_SESSION['count']);    
         }
             
+    
             if ($otladka) { 
                                 echo '<p><b>var_dump($_SESSION)= </b></p>';
         var_dump($_SESSION);    
@@ -192,9 +170,12 @@ elseif (count($_POST)) {
                                 echo '<p><b>var_dump($advertise)= </b></p>';
         var_dump($advertise);    
         }
-
+        
+        output_begin_html();
+        output_form();
+        output_advertise();
 }
-            
+
 
 else {
     
@@ -613,10 +594,8 @@ echo '    <div id="price_rw" class="form-row rl">
 echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-    <input type="submit" value="Записать изменения" id="form_submit" name="form" class="vas-submit-input">
-    <input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
-    
-</div>
+    <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input">
+    </div>
     
     </div>';    
          
@@ -659,10 +638,7 @@ echo '<form  method="post">
 
 
     <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
-        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
-        <span class="vas-submit-triangle"></span> 
-        <input type="submit" value="Добавить" id="form_submit" name="main_form" 
-        class="vas-submit-input"> </div>
+        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> <span class="vas-submit-triangle"></span> <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input"> </div>
     </div>
 </form>
 </body>';

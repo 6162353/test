@@ -1,12 +1,113 @@
 <?php
-session_start();
+
+/* 
+
+<
+ *
+ * 1) dz6_1.php Сохранять объявления в Cookie и выставить время жизни - неделю
+ 
+ * желательно добавить возможность редактирования объявления
+ * + поменять название кнопки - редактировать
+ * + добавить кнопку -  Назад
+ * 
+ * 
+ */
+
+
+error_reporting(E_ALL);
 ob_start(); 
 header('Content-type: text/html; charset=utf-8');
 
 $otladka=0;
 $otladka2=0;
+$otladka3=0;
 $reset_session=0;
 $delete=0;
+global $temp_array;
+
+//$_POST=array('name'=> '1');
+global $ads_in_cookie;
+
+              
+            
+if (isset($_COOKIE['advertise'])) {
+     $ads_in_cookie=$_COOKIE['advertise'];
+     
+     // для вывода объявлений у нас используется конструкция для массива
+     
+     $temp_array=unserialize($ads_in_cookie);
+     //$count=$_SESSION['count'];
+     
+    if ($otladka) { 
+                    echo 'Куки установлена с пред. раза? var_dump($_COOKIE)= \n';
+    var_dump($_COOKIE);    
+    } 
+    
+    
+
+     
+     
+    } 
+else {
+
+$ads_in_cookie="a:0:{}";
+
+if (setcookie("advertise",$advertise,time()+ 3600 * 24 * 7))
+// сразу же и устанавливает куки
+    {
+    
+        echo "куки установлен\n";
+        if ($otladka) {
+
+            echo "Cookie успешно установлен!\n";
+
+        }
+
+
+
+// эта операция не имеет смысла, потому что куки не установлен в суперглобальную переменную
+// он установлен пока в ответ http сервера, поэтому $_COOKIE["advertise"] - не существует ещё
+        /*
+    if ($otladka) {
+
+            echo "Установка Cookie= \n";
+            echo $_COOKIE["advertise"];
+
+
+        } */
+
+
+                }
+
+}
+            
+            
+
+//session_start();
+
+/*
+
+if (setcookie("advertise","",time()+ 3600 * 24 * 7))
+       // сразу же и устанавливает куки
+{
+    if ($otladka) {
+        
+        echo "<h3>Cookie успешно установлен!</h3>";
+        
+    }
+    
+    
+}
+
+if ($otladka) {
+        
+        echo "Cookie= ";
+        echo $_COOKIE["advertise"];
+        
+        
+    }
+
+*/
 
 
 //unset($_SESSION);
@@ -23,11 +124,18 @@ $delete=0;
 
 //$_POST=null;
 
+
+
 if ($reset_session) {
-    $GLOBALS["_POST"]=null;
-    //$_SESSION['count']=0;
-    session_destroy();
-    
+   setcookie("advertise",$advertise,time()- 3600 * 24 * 7);
+
+       if ($otladka) {
+
+            echo "После удаления сессии var_dump(Cookie)= \n";
+            echo var_dump($_COOKIE["advertise"]);
+
+
+        }    
     
 }
 
@@ -35,22 +143,28 @@ if ($reset_session) {
 //5) При нажатии на «Удалить», объявление удаляется из сессии
 
 
-if ($otladka) { 
+if ($otladka2) { 
 
-                echo '<p><b>var_dump($_GET)= </b></p>';
+                echo 'var_dump($_GET)= \n';
         var_dump($_GET);
         
-                                        echo '<p><b>var_dump($_SESSION)= </b></p>';
+                                        echo 'var_dump($_SESSION)= \n';
         var_dump($_SESSION);    
         
-        echo '<p><b>var_dump(isset($_GET["id"]))= </b></p>';
+        echo 'var_dump(isset($_GET["id"]))= \n';
         var_dump(isset($_GET["id"]));    
         
 }
 
-// забираем в скрипт установленные переменные из сессии
+if ($otladka) { 
+                    echo "До всего var_dump(_COOKIE)= \n";
+var_dump($_COOKIE);    
+}
+        
 
-        if (isset($_SESSION['advertise'])) {
+// забираем в скрипт установленные переменные из сессии
+/*
+        if (isset($_SESSION["advertise'])) {
              $advertise=$_SESSION['advertise'];
              //$count=$_SESSION['count'];
             } 
@@ -60,39 +174,29 @@ if ($otladka) {
         //$_SESSION['count']=0;
         $_SESSION['advertise']=array();
             }
-            
-       if (isset($_POST['form'])) {
-    
-    if ($_POST['form']=="Записать изменения") {
-    
-    // сохранить элемент
-    $_SESSION['advertise'][$_GET['id']]=$_POST;
-   $_POST=null;
-    
-    
-    }
-    
-    if ($_POST['form']=="Назад") {
-    
-    $_POST=null;
-    unset($_GET);
-    header("Location:/test/dz6.php");
-    
-    
-    
-}
-}     
+    */        
+// через куки
+  
 
-// если гет заполнен, значит запросили удаление или просмотр
+// если гет заполнен, значит запросили удаление или просмотр 
 
-if (isset($_GET["id"])) {
+if (isset($_GET["id"])) { 
+    
+    
+    
+    echo "GET";
+    
+        output_begin_html();
+        output_form();
+    
+    
     
     if (isset($_GET["del"])) {
     
     
-    if (isset($_SESSION['advertise'][$_GET["id"]])) {
+    if (isset($temp_array[$_GET["id"]])) {
     
-    unset($_SESSION['advertise'][$_GET["id"]]);
+    unset($temp_array[$_GET["id"]]);
     unset($_GET["id"]);
     //$_SESSION['count']--;
     header("Location:/test/dz6.php");
@@ -105,38 +209,52 @@ if (isset($_GET["id"])) {
     
      if ($otladka) 
      { 
-                                    echo '<p><b>var_dump($_SESSION)= </b></p>';
-        var_dump($_SESSION);   
+        echo '<p><b>После удаления элемента в ($temp_array)= </b></p>';
+        var_dump($temp_array);   
     
-     }
+     } 
      
      // после удаления 1 элемента, последовательность индексов нарушается.
      // пересоберу массив
      
-     $amount=count($_SESSION['advertise']);
+     $amount=count($temp_array);
      $array=array();
      for ($i=0; $i<$amount; $i++) {
          
-         $array[$i]=current($_SESSION['advertise']);
-         next($_SESSION['advertise']);
+         $array[$i]=current($temp_array);
+         next($temp_array);
          
      }
-     reset($_SESSION['advertise']);
-     $_SESSION['advertise']=$array;
+     
+     
+     
+     
+     $temp_array=$array;
+     
+      // надо элемент в куках убрать
+     
+     $ads_in_cookie=serialize($temp_array);
+     
+
+    setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
+     
+    
+     
+     
      
      
           if ($otladka) 
      {  echo '<br>После пересборки массива';
                                                  echo '<p><b>var_dump($array)= </b></p>';
         var_dump($array);   
-                                    echo '<p><b>var_dump($_SESSION)= </b></p>';
-        var_dump($_SESSION);   
+                                    echo '<p><b>var_dump($temp_array)= </b></p>';
+        var_dump($temp_array);   
                                     echo '<p><b>var_dump($_GET)= </b></p>';
         var_dump($_GET);   
     
      }
     
-    }
+    } 
     
     if (isset($_GET["edit"])) {
         
@@ -157,44 +275,56 @@ if (isset($_GET["id"])) {
     }
     
 
-     
-     
+          
 } 
+
 
 // если заполнен пост
 
 elseif (count($_POST)) {    
-    
-          if (isset($_POST['main_form'])) {
-            
-            if ($_POST['main_form']=='Добавить') {
+        
+        
+        
+        
+                    if ($otladka) { 
+                                echo "После поста, сохраненное в куки var_dump(_COOKIE)= \n";
+        var_dump($_COOKIE);   
+        
+            echo "После поста, сохраненное в куки serialize(_POST)= \n";
+        echo serialize($_POST);
+        }
+        
+        
+        $temp_array=unserialize($ads_in_cookie);
+        
+                            if ($otladka) { 
+                                echo "<p> unserialize(temp_array)= </p>\n";
+        var_dump($temp_array);    
+        }
+        
+        
+        
+        array_push($temp_array,$_POST);
+        
+        
+                                    if ($otladka) { 
+                                echo "<p> temp_array= </p>\n";
+        var_dump($temp_array);    
+        }
+        
+        
+        
+        $ads_in_cookie=serialize($temp_array);
+        
 
-                
-        array_push($advertise, $_POST);
-        $_SESSION['advertise']=$advertise;
-
+        setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
+               
+        
         output_begin_html();
         output_form();
         output_advertise();
-                
-                
-            }
-            
-            
-        }
-            
-            if ($otladka) { 
-                                echo '<p><b>var_dump($_SESSION)= </b></p>';
-        var_dump($_SESSION);    
-        }
-        
-                            if ($otladka) { 
-                                echo '<p><b>var_dump($advertise)= </b></p>';
-        var_dump($advertise);    
-        }
-
 }
-            
+
 
 else {
     
@@ -206,17 +336,16 @@ else {
 }
 
 
-
     
         if ($otladka) { 
 //                                            echo '<p><b>var_dump($GLOBALS)= </b></p>';
 //        var_dump($GLOBALS);   
-                                echo '<p><b>var_dump($_SESSION)= </b></p>';
+                                echo 'var_dump($_SESSION)= \n';
         var_dump($_SESSION);    
         
-                echo '<p><b>var_dump($_POST)= </b></p>';
+                echo 'var_dump($_POST)= \n';
         var_dump($_POST);
-                echo '<p><b>var_dump($_GET)= </b></p>';
+                echo 'var_dump($_GET)= \n';
         var_dump($_GET);
         
         }
@@ -226,32 +355,7 @@ else {
         var_dump(isset($_SESSION['advertise']));    
         }
         
-        
 
-
-
-
-
-
-
-
-
-//unset($_SESSION);
-
-/* // не удаляет сессию такая конструкция и всё тут
-
-$amount_session=count($_SESSION);
-
-for ($i=0; $i<$amount_session; $i++) {
-    
-    unset($_SESSION[$i]);
-    echo '<br>'.$i;
-    
-}
-
-*/
-
-        
 
 
 
@@ -269,10 +373,7 @@ for ($i=0; $i<$amount_session; $i++) {
     }
 
 
-
-
-
-
+    
 function output_begin_html() {
     
     echo '<!DOCTYPE HTML>
@@ -290,7 +391,9 @@ function show_form($id) {
  echo '<form  method="post">';
  $checked="";
  
- if ($_SESSION['advertise'][$id]["private"]) {
+ global $temp_array;
+ 
+ if ($temp_array[$id]["private"]) {
      
      // если 1, то частная, если 0, то компания
      
@@ -329,8 +432,8 @@ function show_form($id) {
         
                                 echo '<p><b>var_dump($_SESSION)= </b></p>';
         var_dump($_SESSION);
-        echo '<br>$_SESSION[advertise][$id][seller_name]=';
-        echo $_SESSION['advertise'][$id]['seller_name'];
+        echo '<br>$temp_array[$id][seller_name]=';
+        echo $temp_array[$id]['seller_name'];
         
         
     }
@@ -340,7 +443,7 @@ function show_form($id) {
     <label for="fld_seller_name" class="form-label">
     <b id="your-name">Ваше имя</b></label>
     <input type="text" maxlength="40" class="form-input-text" value="'
-    .$_SESSION['advertise'][$id]['seller_name'].'" name="seller_name" 
+    .$temp_array[$id]['seller_name'].'" name="seller_name" 
     id="fld_seller_name">
     </div>';
     
@@ -349,11 +452,11 @@ function show_form($id) {
     echo '<div class="form-row"> 
     <label for="fld_email" class="form-label">Электронная почта</label>
         <input type="text" class="form-input-text" value="'
-        .$_SESSION['advertise'][$id]["email"].'" name="email" id="fld_email">
+        .$temp_array[$id]["email"].'" name="email" id="fld_email">
     </div>';
  
 
-if (isset($_SESSION['advertise'][$id]["allow_mails"])) { 
+if (isset($temp_array[$id]["allow_mails"])) { 
     $checked="checked";
 }
 else {
@@ -374,7 +477,7 @@ else {
      echo '    <div class="form-row"> 
     <label id="fld_phone_label" for="fld_phone" class="form-label">Номер телефона</label> 
     <input type="text" class="form-input-text" value="'
-    .$_SESSION['advertise'][$id]["phone"].'" name="phone" id="fld_phone">
+    .$temp_array[$id]["phone"].'" name="phone" id="fld_phone">
     </div>';
  
     
@@ -403,7 +506,7 @@ $options=explode('!',$string);
 
      foreach ($options as $elem) {
          
-         if (stristr($elem,$_SESSION['advertise'][$id]["location_id"])) {
+         if (stristr($elem,$temp_array[$id]["location_id"])) {
              
             $elem=ltrim($elem);
             echo substr_replace($elem,' selected="" ', 7,0);
@@ -431,7 +534,7 @@ $options=explode('!',$string);
     echo '<br>var_dump($citys)=';    
      echo var_dump($citys);
                   echo '<br>Нахождение кода города= ';
-             echo stristr($elem,$_SESSION['advertise'][$id]["location_id"]);
+             echo stristr($elem,$temp_array[$id]["location_id"]);
      
     }
     
@@ -459,7 +562,7 @@ echo '    <div id="f_metro_id">
 
      foreach ($options as $elem) {
          
-         if (stristr($elem,$_SESSION['advertise'][$id]["metro_id"])) {
+         if (stristr($elem,$temp_array[$id]["metro_id"])) {
              
             $elem=ltrim($elem);
             echo substr_replace($elem,' selected="" ', 7,0);
@@ -564,7 +667,7 @@ echo ' <div class="form-row">
 
      foreach ($options as $elem) {
          
-         if (stristr($elem,$_SESSION['advertise'][$id]["category_id"])) {
+         if (stristr($elem,$temp_array[$id]["category_id"])) {
              
             $elem=ltrim($elem);
             echo substr_replace($elem,' selected="" ', 7,0);
@@ -595,28 +698,26 @@ echo ' <div class="form-row">
 echo '<div id="f_title" class="form-row f_title"> 
     <label for="fld_title" class="form-label">Название объявления</label> 
     <input type="text" maxlength="50" class="form-input-text-long" value="'
-    .$_SESSION['advertise'][$id]["title"].'" name="title" id="fld_title">
+    .$temp_array[$id]["title"].'" name="title" id="fld_title">
     </div>';
     
 echo '    <div class="form-row"> 
     <label for="fld_description" class="form-label" id="js-description-label">Описание объявления</label>
     <textarea maxlength="3000" name="description" id="fld_description" class="form-input-textarea">'
-    .$_SESSION['advertise'][$id]["description"].'</textarea> </div>';
+    .$temp_array[$id]["description"].'</textarea> </div>';
     
 echo '    <div id="price_rw" class="form-row rl"> 
     <label id="price_lbl" for="fld_price" class="form-label">Цена</label>
     <input type="text" maxlength="9" class="form-input-text-short" 
-    value="'.$_SESSION['advertise'][$id]["price"].'" name="price" id="fld_price">&nbsp;<span id="fld_price_title">руб.</span>
+    value="'.$temp_array[$id]["price"].'" name="price" id="fld_price">&nbsp;<span id="fld_price_title">руб.</span>
     <a class="link_plain grey right_price c-2 icon-link" id="js-price-link" 
     href="/info/pravilnye_ceny?plain"><span>Правильно указывайте цену</span></a> </div>';
 
 echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-    <input type="submit" value="Записать изменения" id="form_submit" name="form" class="vas-submit-input">
-    <input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
-    
-</div>
+    <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input">
+    </div>
     
     </div>';    
          
@@ -659,10 +760,7 @@ echo '<form  method="post">
 
 
     <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
-        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
-        <span class="vas-submit-triangle"></span> 
-        <input type="submit" value="Добавить" id="form_submit" name="main_form" 
-        class="vas-submit-input"> </div>
+        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> <span class="vas-submit-triangle"></span> <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input"> </div>
     </div>
 </form>
 </body>';
@@ -678,38 +776,52 @@ function output_advertise() {
    
    5) При нажатии на «Удалить», объявление удаляется из сессии
    
-   */
+   */  
+    
+    global $temp_array;
+    
+    global $otladka3;
    
-    
-    if (count($_SESSION)) {
+             if ($otladka3) {
         
-    $amount=count($_SESSION['advertise']);    
+    echo '<br>В выводе объявлений $temp_array= ';    
+    echo var_dump($temp_array); 
+    }
     
-    echo "<br><br><br><b>Ваши объявления</b>";
+        echo "<br><br><br><b>Ваши объявления</b>";
     echo "<br>Название объявления | Цена | Имя | Удалить";
     
-    foreach ($_SESSION['advertise'] as $key => $value)
+        
+    
+    
+    if (isset($temp_array)) {
+     
+     
+
+
+      $amount=count($temp_array);    
+    
+      
+      
+    
+     
+    
+    foreach ($temp_array as $key => $value) {
     
         echo '<p>'
-        .'<a href=/test/dz6.php?edit=1&id='.$key.'>'.$_SESSION['advertise'][$key]['title'].'</a> | '
-        .$_SESSION['advertise'][$key]['price'].' | '
-        .$_SESSION['advertise'][$key]['seller_name'].' | <a href=/test/dz6.php?del=1&id='.$key.'>Удалить</a></p>';
+        .'<a href=/test/dz6.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
+        .$temp_array[$key]['price'].' | '
+        .$temp_array['seller_name'].' | <a href=/test/dz6.php?del=1&id='.$key.'>Удалить</a></p>';
         
     
     }
-        
-        
+    
     }
-
-/*4) При нажатии на «название объявления» на экран выводится шаблон объявления как из пункта 1, 
-только в места полей подставляются истинные значения
-
-Передаем данные через гет, id объявления, которое нужно показать
-Нужно узнать как данные вставить в форму
-
-
-*/
-
-
-
+       
+        
+    } 
+    
+    
+ob_end_flush(); 
+    
 ?>
