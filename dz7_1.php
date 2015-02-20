@@ -52,13 +52,13 @@ else {
 
 $ads_in_cookie="a:0:{}";
 
-if (setcookie("advertise",$advertise,time()+ 3600 * 24 * 7))
+if (setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7))
 // сразу же и устанавливает куки
     {
     
-        echo "куки установлен\n";
+        
         if ($otladka) {
-
+            echo "куки установлен\n";
             echo "Cookie успешно установлен!\n";
 
         }
@@ -162,33 +162,30 @@ var_dump($_COOKIE);
 }
         
 
-// забираем в скрипт установленные переменные из сессии
-/*
-        if (isset($_SESSION["advertise'])) {
-             $advertise=$_SESSION['advertise'];
-             //$count=$_SESSION['count'];
-            } 
-        else {
-        $advertise=array();
-        //$count=0;
-        //$_SESSION['count']=0;
-        $_SESSION['advertise']=array();
-            }
-    */        
-// через куки
+if (isset($_POST['form'])) {
+    if ($_POST['form']=="Записать изменения") {
+// сохранить элемент
+        $temp_array[$_GET['id']]=$_POST;
+        $ads_in_cookie=serialize($temp_array);
+        setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
+
+
+        $_POST=null;
+
+}
+    if ($_POST['form']=="Назад") {
+        $_POST=null;
+        unset($_GET);
+
+        header("Location:/test/dz7_1.php");
+}
+}
+
   
 
 // если гет заполнен, значит запросили удаление или просмотр 
 
 if (isset($_GET["id"])) { 
-    
-    
-    
-    echo "GET";
-    
-        output_begin_html();
-        output_form();
-    
     
     
     if (isset($_GET["del"])) {
@@ -281,7 +278,9 @@ if (isset($_GET["id"])) {
 
 // если заполнен пост
 
-elseif (count($_POST)) {    
+elseif (count($_POST)) {  
+    if (isset($_POST['main_form'])) {
+if ($_POST['main_form']=='Добавить') {
         
         
         
@@ -315,14 +314,14 @@ elseif (count($_POST)) {
         
         
         $ads_in_cookie=serialize($temp_array);
-        
-
         setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
                
         
         output_begin_html();
         output_form();
         output_advertise();
+}
+    }
 }
 
 
@@ -337,23 +336,23 @@ else {
 
 
     
-        if ($otladka) { 
+    if ($otladka) { 
 //                                            echo '<p><b>var_dump($GLOBALS)= </b></p>';
 //        var_dump($GLOBALS);   
-                                echo 'var_dump($_SESSION)= \n';
-        var_dump($_SESSION);    
+                            echo 'var_dump($_SESSION)= \n';
+    var_dump($_SESSION);    
+
+            echo 'var_dump($_POST)= \n';
+    var_dump($_POST);
+            echo 'var_dump($_GET)= \n';
+    var_dump($_GET);
+
+    }
         
-                echo 'var_dump($_POST)= \n';
-        var_dump($_POST);
-                echo 'var_dump($_GET)= \n';
-        var_dump($_GET);
-        
-        }
-        
-                    if ($otladka) { 
-                                echo '<p><b>var_dump(isset($_SESSION["advertise"])= </b></p>';
-        var_dump(isset($_SESSION['advertise']));    
-        }
+    if ($otladka) { 
+                            echo '<p><b>var_dump(isset($_SESSION["advertise"])= </b></p>';
+    var_dump(isset($_SESSION['advertise']));    
+    }
         
 
 
@@ -716,8 +715,9 @@ echo '    <div id="price_rw" class="form-row rl">
 echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-    <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input">
-    </div>
+    <input type="submit" value="Записать изменения" id="form_submit" name="form" class="vas-submit-input">
+<input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
+</div>
     
     </div>';    
          
@@ -760,7 +760,10 @@ echo '<form  method="post">
 
 
     <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
-        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> <span class="vas-submit-triangle"></span> <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input"> </div>
+        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
+        <span class="vas-submit-triangle"></span> 
+        <input type="submit" value="Добавить" id="form_submit" name="main_form" 
+        class="vas-submit-input"> </div>
     </div>
 </form>
 </body>';
