@@ -5,6 +5,7 @@
         <group>
             <file>file:/var/www/test/info.php</file>
             <file>file:/var/www/test/functions_dz7.php</file>
+            <file>file:/var/www/test/dz7_2.php</file>
             <file>file:/var/www/test/dz6.php</file>
             <file>file:/var/www/test/dz7_1.php</file>
             <file>file:/var/www/test/cookie.php</file>

@@ -199,7 +199,7 @@ if (isset($_GET["id"])) {
     unset($temp_array[$_GET["id"]]);
     unset($_GET["id"]);
     //$_SESSION['count']--;
-    header("Location:/test/dz6.php");
+    header("Location:/test/dz7_1.php");
     }
     
     
@@ -809,9 +809,9 @@ function output_advertise() {
     foreach ($temp_array as $key => $value) {
     
         echo '<p>'
-        .'<a href=/test/dz6.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
+        .'<a href=/test/dz7_1.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
         .$temp_array[$key]['price'].' | '
-        .$temp_array['seller_name'].' | <a href=/test/dz6.php?del=1&id='.$key.'>Удалить</a></p>';
+        .$temp_array['seller_name'].' | <a href=/test/dz7_1.php?del=1&id='.$key.'>Удалить</a></p>';
         
     
     }
