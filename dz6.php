@@ -1,10 +1,14 @@
 <?php
 session_start();
-
+ob_start(); 
 header('Content-type: text/html; charset=utf-8');
 
-
+$otladka=0;
+$otladka2=0;
+$reset_session=0;
 $delete=0;
+
+
 
 /*
 2) Всё что пришло из объявление в $_SESSION как новое объявление.
@@ -12,26 +16,49 @@ $delete=0;
 */
 
 
+if ($reset_session) {
+    $GLOBALS["_POST"]=null;
+    session_destroy();
+    
+    
+}
 
 
 //5) При нажатии на «Удалить», объявление удаляется из сессии
-
 
 
 // забираем в скрипт установленные переменные из сессии
 
         if (isset($_SESSION['advertise'])) {
              $advertise=$_SESSION['advertise'];
-             //$count=$_SESSION['count'];
+
             } 
         else {
         $advertise=array();
-        //$count=0;
-        //$_SESSION['count']=0;
         $_SESSION['advertise']=array();
             }
             
-            
+       if (isset($_POST['form'])) {
+    
+    if ($_POST['form']=="Записать изменения") {
+    
+    // сохранить элемент
+    $_SESSION['advertise'][$_GET['id']]=$_POST;
+   $_POST=null;
+    
+    
+    }
+    
+    if ($_POST['form']=="Назад") {
+    
+    $_POST=null;
+    unset($_GET);
+    header("Location:/test/dz6.php");
+    
+    
+    
+}
+}     
 
 // если гет заполнен, значит запросили удаление или просмотр
 
@@ -44,20 +71,9 @@ if (isset($_GET["id"])) {
     
     unset($_SESSION['advertise'][$_GET["id"]]);
     unset($_GET["id"]);
+
     header("Location:/test/dz6.php");
     }
-    
-    
-    
-    
-    
-    
-     if ($otladka) 
-     { 
-                                    echo '<p><b>var_dump($_SESSION)= </b></p>';
-        var_dump($_SESSION);   
-    
-     }
      
      // после удаления 1 элемента, последовательность индексов нарушается.
      // пересоберу массив
@@ -73,7 +89,6 @@ if (isset($_GET["id"])) {
      reset($_SESSION['advertise']);
      $_SESSION['advertise']=$array;
      
-     
     
     }
     
@@ -81,7 +96,7 @@ if (isset($_GET["id"])) {
         
         show_form($_GET["id"]);
         output_advertise();
-        
+
         
     }
     
@@ -94,14 +109,27 @@ if (isset($_GET["id"])) {
 
 elseif (count($_POST)) {    
     
+          if (isset($_POST['main_form'])) {
+            
+            if ($_POST['main_form']=='Добавить') {
+
+                
         array_push($advertise, $_POST);
         $_SESSION['advertise']=$advertise;
 
         output_begin_html();
         output_form();
         output_advertise();
-}
+                
+                
+            }
+            
+            
+        }
 
+
+}
+            
 
 else {
     
@@ -163,7 +191,7 @@ function show_form($id) {
      
     }
 
-    
+
     echo '<div class="form-row"> 
     <label for="fld_seller_name" class="form-label">
     <b id="your-name">Ваше имя</b></label>
@@ -250,6 +278,7 @@ $options=explode('!',$string);
      
      
     echo '</select></div>';
+    
 
     
 $string = '     <option value="2028">Берёзовая роща</option>!
@@ -430,8 +459,10 @@ echo '    <div id="price_rw" class="form-row rl">
 echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-    <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input">
-    </div>
+    <input type="submit" value="Записать изменения" id="form_submit" name="form" class="vas-submit-input">
+    <input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
+    
+</div>
     
     </div>';    
          
@@ -474,7 +505,10 @@ echo '<form  method="post">
 
 
     <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
-        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> <span class="vas-submit-triangle"></span> <input type="submit" value="Далее" id="form_submit" name="main_form_submit" class="vas-submit-input"> </div>
+        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
+        <span class="vas-submit-triangle"></span> 
+        <input type="submit" value="Добавить" id="form_submit" name="main_form" 
+        class="vas-submit-input"> </div>
     </div>
 </form>
 </body>';
@@ -513,15 +547,6 @@ function output_advertise() {
         
     }
 
-/*4) При нажатии на «название объявления» на экран выводится шаблон объявления как из пункта 1, 
-только в места полей подставляются истинные значения
-
-Передаем данные через гет, id объявления, которое нужно показать
-Нужно узнать как данные вставить в форму
-
-
-*/
-
-
+ob_end_flush(); 
 
 ?>
