@@ -5,21 +5,21 @@ header('Content-type: text/html; charset=utf-8');
 $otladka0=0;
 $otladka=0;
 $otladka2=0;
-$reset_session=0;
+$reset=0;
 $delete=0;
 $ads_f='ads.txt';
 $current_php_script='dz7_2';
 
 
+
 /*
-2) Всё что пришло из объявление в $_SESSION как новое объявление.
 через файлы
 */
 
 
-if ($reset_session) {
+if ($reset) {
 $GLOBALS["_POST"]=null;
-session_destroy();
+
 
 unlink('ads.txt');
 }
@@ -105,6 +105,7 @@ if ($_POST['main_form']=='Добавить') {
 
         $ads_t=serialize($temp_array);
 
+        $ads_h=fopen($ads_f,'r+');
         fseek($ads_h,0);
         fwrite($ads_h,$ads_t);
         

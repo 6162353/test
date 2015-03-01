@@ -23,6 +23,10 @@ $otladka2=0;
 $otladka3=0;
 $reset=0;
 $delete=0;
+$seller_name="";
+$checkedPrivate='checked';
+$checkedCompany='';
+$post_edit=0;
       
             
 if (isset($_COOKIE['advertise'])) {
@@ -65,7 +69,7 @@ if (isset($_POST['form'])) {
         $_POST=null;
         unset($_GET);
 
-        header("Location:/test/dz7_1.php");
+        header("Location:/test/dz7_1_ht.php");
 }
 }
 
@@ -108,7 +112,7 @@ if (isset($_GET["id"])) {
      
 
     setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
-    header("Location:/test/dz7_1.php");
+    header("Location:/test/dz7_1_ht.php");
  
     
     }
@@ -116,8 +120,15 @@ if (isset($_GET["id"])) {
     
     if (isset($_GET["edit"])) {
         
-        show_form($_GET["id"]);
-        output_advertise();
+        $id=$_GET["id"];
+        $post_edit=1;
+        $checkedPrivate = ($temp_array[$id]["private"]) ? 'checked' : '' ;
+        $checkedCompany = ($temp_array[$id]["private"]) ? '' : 'checked' ;
+        $seller_name = $temp_array[$id]['seller_name'];
+        
+        
+        //show_form($_GET["id"]);
+        //output_advertise();
         
     }
     
@@ -140,9 +151,9 @@ if ($_POST['main_form']=='Добавить') {
         setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
                
         
-        output_begin_html();
-        output_form();
-        output_advertise();
+        //output_begin_html();
+        //output_form();
+        //output_advertise();
 }
     }
 }
@@ -151,64 +162,26 @@ if ($_POST['main_form']=='Добавить') {
 else {
     
     
-            output_begin_html();
-        output_form();
-    output_advertise();
+            //output_begin_html();
+        //output_form();
+    //output_advertise();
     
 }
 
     
 function output_begin_html() {
     
-    echo '<!DOCTYPE HTML>
-    <html>
-     <head>
-      <meta charset="utf-8">
-      <title>Новости</title>
-     </head>
-     <body>';
+
     
 }
 
 function show_form($id) {
     
- echo '<form  method="post">';
- $checked="";
+ //echo '<form  method="post">';
  
- global $temp_array;
+global $temp_array;
  
- if ($temp_array[$id]["private"]) {
-     
-     // если 1, то частная, если 0, то компания
-     
-    echo '<div class="form-row-indented">
-    <label class="form-label-radio">
-        <input type="radio" checked value="1" name="private">Частное лицо
-        
-    </label>
-    
-    <label class="form-label-radio">
-        <input type="radio" value="0" name="private">Компания
-        
-    </label> </div>';
-    
-     
- }
- 
- else {
-     
-         echo '<div class="form-row-indented">
-    <label class="form-label-radio">
-        <input type="radio"  value="0" name="private">Частное лицо
-        
-    </label>
-    
-    <label class="form-label-radio">
-        <input type="radio" checked value="1" name="private">Компания
-        
-    </label> </div>';
-     
-    }
+
 
     echo '<div class="form-row"> 
     <label for="fld_seller_name" class="form-label">
@@ -477,7 +450,9 @@ echo '    <div id="price_rw" class="form-row rl">
 echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-    <input type="submit" value="Записать изменения" id="form_submit" name="form" class="vas-submit-input">
+
+<input type="submit" value="Записать изменения" id="form_submit" name="form" 
+class="vas-submit-input">
 <input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
 </div>
     
@@ -496,13 +471,53 @@ echo '    <div class="form-row-indented form-row-submit b-vas-submit" id="js_add
 
 function output_form() {
 
-echo '<form  method="post">
+
+}
+
+
+
+
+function output_advertise() {
+    
+    /*    3) Под формой создать вывод всех объявлений, содержащихся в сессии по шаблону:
+   Название объявления | Цена | Имя | Удалить
+   
+   5) При нажатии на «Удалить», объявление удаляется из сессии
+   
+   */  
+
+   
     
     
-    <div class="form-row-indented"> <label class="form-label-radio"><input type="radio" checked="" value="1" name="private">Частное лицо</label> <label class="form-label-radio"><input type="radio" value="0" name="private">Компания</label> </div>
-    <div class="form-row"> <label for="fld_seller_name" class="form-label"><b id="your-name">Ваше имя</b></label>
-        <input type="text" maxlength="40" class="form-input-text" value="" name="seller_name" id="fld_seller_name">
-    </div>
+    
+//ob_end_flush(); 
+    
+}
+    
+?>
+
+
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Новости</title>
+</head>
+<body>
+<form  method="post">
+<div class="form-row-indented"> 
+<label class="form-label-radio">
+<input type="radio" <?php echo $checkedPrivate ?> value='1' name="private">Частное лицо
+</label> 
+    <label class="form-label-radio">
+<input type="radio" <?php echo $checkedCompany ?> value='0' name="private">Компания</label> </div>
+
+    
+<div class="form-row"> 
+<label for="fld_seller_name" class="form-label">
+<b id="your-name">Ваше имя</b></label>
+<input type="text" maxlength="40" class="form-input-text" value="<?php echo $seller_name ?>" name="seller_name" id="fld_seller_name">
+</div>
 
 
     <div class="form-row"> <label for="fld_email" class="form-label">Электронная почта</label>
@@ -524,52 +539,52 @@ echo '<form  method="post">
     <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
         <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
         <span class="vas-submit-triangle"></span> 
-        <input type="submit" value="Добавить" id="form_submit" name="main_form" 
-        class="vas-submit-input"> </div>
-    </div>
-</form>
-</body>';
+
+            <?php if ($post_edit) {
+
+echo '<input type="submit" value="Записать изменения" id="form_submit" name="form" 
+class="vas-submit-input">
+<input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
+</div>';
+
 }
 
+else {
 
+    echo '<input type="submit" value="Добавить" id="form_submit" name="main_form" 
+        class="vas-submit-input"> ';
+}         ?>
+        
+        </div>
+    </div>
+</form>
+         
 
-
-function output_advertise() {
-    
-    /*    3) Под формой создать вывод всех объявлений, содержащихся в сессии по шаблону:
-   Название объявления | Цена | Имя | Удалить
-   
-   5) При нажатии на «Удалить», объявление удаляется из сессии
-   
-   */  
-    
-    global $temp_array;
-
-        echo "<br><br><br><b>Ваши объявления</b>";
-    echo "<br>Название объявления | Цена | Имя | Удалить";
-   
-    
-    if (isset($temp_array)) {
+ <?php if (isset($temp_array)) {
+        
 
       $amount=count($temp_array);    
 
+    if ($amount) {
+        
+    echo '<br><br><br><b>Ваши объявления</b>';
+    echo '<br><p>Название объявления | Цена | Имя | Удалить</p>';
     
     foreach ($temp_array as $key => $value) {
     
         echo '<p>'
-        .'<a href=/test/dz7_1.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
+        .'<a href=/test/dz7_1_ht.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
         .$temp_array[$key]['price'].' | '
-        .$temp_array['seller_name'].' | <a href=/test/dz7_1.php?del=1&id='.$key.'>Удалить</a></p>';
+        .$temp_array['seller_name'].' | <a href=/test/dz7_1_ht.php?del=1&id='.$key.'>Удалить</a></p>';
         
     
     }
     
     }
-       
+    }
         
-    } 
+    ?>
+         
+</body>
+    </html>
     
-    
-ob_end_flush(); 
-    
-?>
