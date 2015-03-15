@@ -1,27 +1,13 @@
 <?php
 
-/* 
-
-<
- *
- * 1) dz7_1.php Сохранять объявления в Cookie и выставить время жизни - неделю
- 
- * желательно добавить возможность редактирования объявления
- * + поменять название кнопки - редактировать
- * + добавить кнопку -  Назад
- * 
- * 
- */
-
-
-error_reporting(E_ALL);
 header('Content-type: text/html; charset=utf-8');
-
+$otladka0=0;
 $otladka=0;
 $otladka2=0;
-$otladka3=0;
 $reset=0;
 $delete=0;
+$ads_f='ads.txt';
+$current_php_script='dz7_2_ht';
 
 $seller_name="";
 $checkedPrivate='checked';
@@ -156,98 +142,83 @@ $categories = array (
     
 );
 
-      
-            
-if (isset($_COOKIE['advertise'])) {
-     $ads_in_cookie=$_COOKIE['advertise'];
-     $temp_array=unserialize($ads_in_cookie);
 
-     
-    } 
-else {
+/*
+через файлы
+*/
 
-$ads_in_cookie="a:0:{}";
-
-if (setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7))
-// сразу же и устанавливает куки
-    {
-
-                }
-
-}
-            
-   
 
 if ($reset) {
-   setcookie("advertise",$advertise,time()- 3600 * 24 * 7);
+$GLOBALS["_POST"]=null;
+
+
+unlink('ads.txt');
+}
+
+
+if (file_exists('ads.txt')) {
+    $ads_t=file_get_contents('ads.txt');
+    $temp_array=unserialize($ads_t);
     
-}      
+    $ads_h=fopen($ads_f,'r+');
+
+    }
+else {
+
+
+$ads_h=fopen($ads_f,'w+');
+$ads_t='a:0:{}';
+
+fwrite($ads_h,$ads_t);
+$temp_array=array();
+
+        }
+        
+
+        
+        
 
 if (isset($_POST['form'])) {
     if ($_POST['form']=="Записать изменения") {
 // сохранить элемент
-        $temp_array[$_GET['id']]=$_POST;
-        $ads_in_cookie=serialize($temp_array);
-        setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
+$temp_array[$_GET['id']]=$_POST;
+$ads_t=serialize($temp_array);
+        fseek($ads_h,0);
+        fwrite($ads_h,$ads_t);
 
 
-        $_POST=null;
-
+$_POST=null;
 }
     if ($_POST['form']=="Назад") {
-        $_POST=null;
-        unset($_GET);
-
-        header("Location:/test/dz7_1_ht.php");
+$_POST=null;
+unset($_GET);
+fclose($ads_h);
+header('Location:/test/'.$current_php_script.'.php');
 }
 }
 
-  
-
-// если гет заполнен, значит запросили удаление или просмотр 
-
-if (isset($_GET["id"])) { 
-    
-    
+// если гет заполнен, значит запросили удаление или просмотр
+if (isset($_GET["id"])) {
     if (isset($_GET["del"])) {
-    
-    
     if (isset($temp_array[$_GET["id"]])) {
-    
-    unset($temp_array[$_GET["id"]]);
-    unset($_GET["id"]);
-    
-    
-     // после удаления 1 элемента, последовательность индексов нарушается.
-     // пересоберу массив
-     
-     $amount=count($temp_array);
-     $array=array();
-     for ($i=0; $i<$amount; $i++) {
-         
-         $array[$i]=current($temp_array);
-         next($temp_array);
-         
-     }
-     
-     
-  
-     
-     $temp_array=$array;
-     
-      // надо элемент в куках убрать
-     
-     $ads_in_cookie=serialize($temp_array);
-     
+unset($temp_array[$_GET["id"]]);
+unset($_GET["id"]);
+$ads_t=  serialize($temp_array);
 
-    setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
-    header("Location:/test/dz7_1_ht.php");
- 
-    
-    }
-    }
-    
-    if (isset($_GET['edit'])) {
+
+     
+        fseek($ads_h,0);
+        fwrite($ads_h,$ads_t);
+   
+fclose($ads_h);
+header('Location:/test/'.$current_php_script.'.php');
+}
+  
+
+}
+
+
+    if (isset($_GET["edit"])) {
         
         $id=$_GET['id'];
         $post_edit=1;
@@ -268,34 +239,35 @@ if (isset($_GET["id"])) {
         $title=$temp_array[$id]['title'];
         $description=$temp_array[$id]['description'];
         $price=$temp_array[$id]['price'];
-        
-        
-    }
-    
+
 }
-
-
+}
 // если заполнен пост
 
-elseif (count($_POST)) {  
-    if (isset($_POST['main_form'])) {
+    elseif (count($_POST)) {
+if (isset($_POST['main_form'])) {
 if ($_POST['main_form']=='Добавить') {
         
 
-        
-        $temp_array=unserialize($ads_in_cookie);
-
         array_push($temp_array,$_POST);
 
-        $ads_in_cookie=serialize($temp_array);
-        setcookie("advertise",$ads_in_cookie,time()+ 3600 * 24 * 7);
+        $ads_t=serialize($temp_array);
 
+        $ads_h=fopen($ads_f,'r+');
+        fseek($ads_h,0);
+        fwrite($ads_h,$ads_t);
         
+        
+
 }
-    }
 }
 
+}
+
+    
+fclose($ads_h);    
 ?>
+
 
 
 <!DOCTYPE HTML>
@@ -514,9 +486,9 @@ else {
     foreach ($temp_array as $key => $value) {
     
         echo '<p>'
-        .'<a href=/test/dz7_1_ht.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
+        .'<a href=/test/'.$current_php_script.'.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
         .$temp_array[$key]['price'].' | '
-        .$temp_array[$key]['seller_name'].' | <a href=/test/dz7_1_ht.php?del=1&id='.$key.'>Удалить</a></p>';
+        .$temp_array[$key]['seller_name'].' | <a href=/test/'.$current_php_script.'.php?del=1&id='.$key.'>Удалить</a></p>';
         
     
     }
