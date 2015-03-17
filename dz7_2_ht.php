@@ -19,6 +19,7 @@ $phone=$title=$description='';
 $selected='selected=""';
 $location_id='641780';
 $price='0';
+$amount_ads=0;
 $cities = array ( 'Новосибирск' => '641780',
     'Барабинск' => '641490',
     'Бердск' => '641510',
@@ -169,7 +170,7 @@ else {
 $ads_h=fopen($ads_f,'w+');
 $ads_t='a:0:{}';
 
-fwrite($ads_h,$ads_t);
+//fwrite($ads_h,$ads_t);
 $temp_array=array();
 
         }
@@ -261,6 +262,13 @@ if ($_POST['main_form']=='Добавить') {
 
 }
 }
+
+}
+
+if (isset($temp_array)) {
+        
+
+      $amount_ads=count($temp_array); 
 
 }
 
@@ -472,32 +480,18 @@ else {
     </div>
 </form>
          
-
- <?php if (isset($temp_array)) {
-        
-
-      $amount=count($temp_array);    
-
-    if ($amount) {
-        
-    echo '<br><br><br><b>Ваши объявления</b>';
-    echo '<br><p>Название объявления | Цена | Имя | Удалить</p>';
+ <?php if ($amount_ads): ?>  
+<br><br><br><b>Ваши объявления</b>
+<br><p>Название объявления | Цена | Имя | Удалить</p>
     
-    foreach ($temp_array as $key => $value) {
+<?php foreach ($temp_array as $key => $value): ?> 
     
-        echo '<p>'
-        .'<a href=/test/'.$current_php_script.'.php?edit=1&id='.$key.'>'.$temp_array[$key]['title'].'</a> | '
-        .$temp_array[$key]['price'].' | '
-        .$temp_array[$key]['seller_name'].' | <a href=/test/'.$current_php_script.'.php?del=1&id='.$key.'>Удалить</a></p>';
-        
-    
-    }
-    
-    }
-    }
-        
-    ?>
-         
+<p><a href=/test/<?php echo $current_php_script ?>.php?edit=1&id=<?php echo $key ?>><?php echo $temp_array[$key]['title'] ?></a> | 
+        <?php echo $temp_array[$key]['price'] ?> | 
+        <?php echo $temp_array[$key]['seller_name'] ?> | 
+        <a href=/test/<?php echo $current_php_script ?>.php?del=1&id=<?php echo $key ?>>Удалить</a></p>
+<?php endforeach ?>
+<?php endif ?>    
 </body>
     </html>
     
