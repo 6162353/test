@@ -170,7 +170,6 @@ else {
 $ads_h=fopen($ads_f,'w+');
 $ads_t='a:0:{}';
 
-//fwrite($ads_h,$ads_t);
 $temp_array=array();
 
         }
