@@ -1,13 +1,43 @@
 <?php
 
+/* 
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+
+$project_root=$_SERVER['DOCUMENT_ROOT'];
+$smarty_dir=$project_root.'/test/smarty/';
+
+// put full path to Smarty.class.php
+require($smarty_dir.'libs/Smarty.class.php');
+$smarty = new Smarty();
+
+$smarty->compile_check = true;
+$smarty->debugging = false;
+
+
+
+$smarty->template_dir = $smarty_dir.'templates';
+$smarty->compile_dir = $smarty_dir.'templates_c';
+$smarty->cache_dir = $smarty_dir.'cache';
+$smarty->config_dir = $smarty_dir.'configs';
+
+$smarty->assign('name', 'Alina');
+
+
 header('Content-type: text/html; charset=utf-8');
+
+
+
 $otladka0=0;
 $otladka=0;
 $otladka2=0;
 $reset=0;
 $delete=0;
 $ads_f='ads.txt';
-$current_php_script='dz7_2_ht';
+$current_php_script='dz8';
 
 $seller_name="";
 $checkedPrivate='checked';
@@ -272,226 +302,33 @@ if (isset($temp_array)) {
 }
 
     
-fclose($ads_h);    
+fclose($ads_h); 
+
+$smarty->assign('checkedPrivate',$checkedPrivate);
+$smarty->assign('checkedCompany',$checkedCompany);
+//$smarty->assign(,);
+$smarty->assign('seller_name',$seller_name);
+$smarty->assign('email',$email);
+$smarty->assign('checked_allow_mails',$checked_allow_mails);
+$smarty->assign('phone',$phone);
+$smarty->assign('selected',$selected);
+$smarty->assign('cities', $cities);
+$smarty->assign('location_id',$location_id);
+$smarty->assign('tube_stations',$tube_stations);
+$smarty->assign('tube_station_id',$tube_station_id);
+$smarty->assign('categories',$categories);
+$smarty->assign('category_id',$category_id);
+$smarty->assign('title',$title);
+$smarty->assign('description',$description);
+$smarty->assign('price',$price);
+$smarty->assign('post_edit',$post_edit);
+$smarty->assign('amount_ads',$amount_ads);
+$smarty->assign('temp_array',$temp_array);
+$smarty->assign('current_php_script',$current_php_script);
+
+
+
+$smarty->display('dz8.tpl');
+
 ?>
 
-
-
-<!DOCTYPE HTML>
-<html>
-<head>
-<meta charset="utf-8">
-<title>avito.ru</title>
-</head>
-<body>
-    
-<!-- ФОРМА -->    
-    
-<form  method="post">
-<div class="form-row-indented"> 
-<label class="form-label-radio">
-<input type="radio" <?php echo $checkedPrivate ?> value='1' name="private">Частное лицо
-</label> 
-    <label class="form-label-radio">
-<input type="radio" <?php echo $checkedCompany ?> value='0' name="private">Компания</label> </div>
-
-<!-- ИМЯ -->
-    
-<div class="form-row"> 
-<label for="fld_seller_name" class="form-label">
-<b id="your-name">Ваше имя</b></label>
-<input type="text" maxlength="40" class="form-input-text" 
-       value="<?php echo $seller_name ?>" name="seller_name" id="fld_seller_name">
-</div>
-
-
-<div class="form-row"> <label for="fld_email" class="form-label">Электронная почта</label>
-    <input type="text" class="form-input-text"
-           value="<?php echo $email ?>" name="email" id="fld_email">
-</div>
-    
-    
-    
-    
-    
-<div class="form-row-indented"> <label class="form-label-checkbox" for="allow_mails">
-<input type="checkbox" <?php echo $checked_allow_mails ?> value="1" name="allow_mails" id="allow_mails" 
-   class="form-input-checkbox">
-<span class="form-text-checkbox">Я не хочу получать вопросы по объявлению по e-mail</span>
-    </label> </div>
-    
-<!-- ТЕЛЕФОН -->
-    
-<div class="form-row"> <label id="fld_phone_label" 
-for="fld_phone" class="form-label">Номер телефона</label> 
-<input type="text" class="form-input-text" value="<?php echo $phone ?>" name="phone" id="fld_phone">
-</div>
-    
-
-
-
-<!-- ГОРОД -->
-
-<div id="f_location_id" class="form-row form-row-required"> 
-<label for="region" class="form-label">Город</label> 
-<select title="Выберите Ваш город" name="location_id" id="region" class="form-input-select"> 
-<option value="">-- Выберите город --</option>
-<option class="opt-group" disabled="disabled">-- Города --</option>
-
-<?php foreach ($cities as $city => $value): ?>
-    
-<option 
-    
-       <?php if ($location_id==$value ): ?>
-            <?php echo $selected ?> 
-    <?php endif ?>
-    
-    data-coords=",," 
-    value="<?php echo $value ?>"
-    ><?php echo $city ?>
-
-</option>    
-    
-
-<?php endforeach ?>
-
-</select></div>
-
-
-
-
-<!-- МЕТРО -->
-
-<div id="f_metro_id"> 
-    <select title="Выберите станцию метро" name="metro_id" id="fld_metro_id" 
-    class="form-input-select"> <option value="">-- Выберите станцию метро --</option>'
-
-<?php foreach ($tube_stations as $tube_station => $value): ?>
-    
-<option 
-    
-       <?php if ($tube_station_id==$value ): ?>
-            <?php echo $selected ?> 
-    <?php endif ?> 
-    
-    value="<?php echo $value ?>"
-    ><?php echo $tube_station ?>
-
-</option>    
-    
-
-<?php endforeach ?>
-
-</select> </div>
-
-
-
-<!-- КАТЕГОРИЯ -->
-
-<div class="form-row"> 
-<label for="fld_category_id" class="form-label">Категория</label> 
-<select title="Выберите категорию объявления" name="category_id" 
-id="fld_category_id" class="form-input-select">
-<option value="">-- Выберите категорию --</option>
-
-<?php foreach ($categories as $key => $category):?>
-    
-<optgroup label="<?php echo $key ?>"> 
-    
-        <?php foreach ($category as $key2 => $value):?>
-    <option 
-        
-       <?php if ($category_id==$value ): ?>
-            <?php echo $selected ?> 
-        <?php endif ?> 
-        
-        value="<?php echo $value ?>"><?php echo $key2 ?></option>
-        <?php endforeach ?>
-
-</optgroup>
-
-<?php endforeach ?>
-
-</select> </div>
-
-
-
-<!-- НАЗВАНИЕ ОБЪЯВЛЕНИЯ -->
-
-<div id="f_title" class="form-row f_title"> 
-<label for="fld_title" class="form-label">Название объявления</label> 
-<input type="text" maxlength="50" class="form-input-text-long" 
-value="<?php echo $title ?>" name="title" id="fld_title"> </div>
-
-
-
-
-
-
-<!-- ОПИСАНИЕ ОБЪЯВЛЕНИЯ -->
-
-<div class="form-row"> 
-<label for="fld_description" class="form-label" id="js-description-label">Описание объявления</label>
-<textarea maxlength="3000" name="description" 
-          id="fld_description" class="form-input-textarea"><?php echo $description ?></textarea> </div>
-
-          
-          
-          
-          
-          
-<!-- ЦЕНА ОБЪЯВЛЕНИЯ -->
-
-<div id="price_rw" class="form-row rl"> 
-<label id="price_lbl" for="fld_price" class="form-label">Цена</label> 
-<input type="text" maxlength="9" class="form-input-text-short" value="<?php echo $price ?>" 
-name="price" id="fld_price">&nbsp;<span id="fld_price_title">руб.</span> 
-<a class="link_plain grey right_price c-2 icon-link" id="js-price-link" 
-   href="/info/pravilnye_ceny?plain"><span>Правильно указывайте цену</span></a> 
-</div>
-
-
-
-
-
-<!-- КНОПКИ  -->
-    <div class="form-row-indented form-row-submit b-vas-submit" id="js_additem_form_submit">
-        <div class="vas-submit-button pull-left"> <span class="vas-submit-border"></span> 
-        <span class="vas-submit-triangle"></span> 
-
-            <?php if ($post_edit): ?>
-
-<input type="submit" value="Записать изменения" id="form_submit" name="form" 
-class="vas-submit-input">
-<input type="submit" value="Назад" id="form_submit" name="form" class="vas-submit-input">
-</div>
-
-<?php else: ?>
-
-    <input type="submit" value="Добавить" id="form_submit" name="main_form" 
-        class="vas-submit-input">
-        
-
-        <?php endif ?>
-        
-        </div>
-    </div>
-</form>
-
-
-         
- <?php if ($amount_ads): ?>  
-<br><br><br><b>Ваши объявления</b>
-<br><p>Название объявления | Цена | Имя | Удалить</p>
-    
-<?php foreach ($temp_array as $key => $value): ?> 
-    
-<p><a href=/test/<?php echo $current_php_script ?>.php?edit=1&id=<?php echo $key ?>><?php echo $temp_array[$key]['title'] ?></a> | 
-        <?php echo $temp_array[$key]['price'] ?> | 
-        <?php echo $temp_array[$key]['seller_name'] ?> | 
-        <a href=/test/<?php echo $current_php_script ?>.php?del=1&id=<?php echo $key ?>>Удалить</a></p>
-<?php endforeach ?>
-<?php endif ?>    
-</body>
-    </html>
-    
