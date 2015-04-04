@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>avito.ru</title>
 </head>
-<body>л
+<body>
     
 <!-- ФОРМА -->    
     
@@ -79,7 +79,7 @@ for="fld_phone" class="form-label">Номер телефона</label>
 
 </select></div>
 
-{*
+
 
 <!-- МЕТРО -->
 
@@ -219,4 +219,3 @@ class="vas-submit-input">
 </body>
     </html>
     
-*}
