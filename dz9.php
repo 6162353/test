@@ -24,9 +24,6 @@ $smarty->compile_dir = $smarty_dir.'templates_c';
 $smarty->cache_dir = $smarty_dir.'cache';
 $smarty->config_dir = $smarty_dir.'configs';
 
-$smarty->assign('name', 'Alina');
-
-
 header('Content-type: text/html; charset=utf-8');
 
 
