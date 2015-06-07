@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <title>avito.ru</title>
 </head>
-<body>л
+<body>
     
 <!-- ФОРМА -->    
     
@@ -79,7 +79,7 @@ for="fld_phone" class="form-label">Номер телефона</label>
 
 </select></div>
 
-{*
+
 
 <!-- МЕТРО -->
 
@@ -207,10 +207,10 @@ class="vas-submit-input">
     
 {foreach from=$temp_array key=key5 item=value5} 
     
-<p><a href=/test/{$current_php_script}.php?edit=1&id={$key5}>{$temp_array.$key5.title}</a> | 
+<p><a href=/test/{$current_php_script}.php?edit=1&id={$temp_array.$key5.id}>{$temp_array.$key5.title}</a> | 
         {$temp_array.$key5.price} | 
-        {$temp_array.$key5.seller_name} | 
-        <a href=/test/{$current_php_script}.php?del=1&id={$key5}>Удалить</a></p>
+        {$temp_array.$key5.user_name} | 
+        <a href=/test/{$current_php_script}.php?del=1&id={$temp_array.$key5.id}>Удалить</a></p>
 {/foreach}
 {/if}   
 
@@ -219,4 +219,3 @@ class="vas-submit-input">
 </body>
     </html>
     
-*}
