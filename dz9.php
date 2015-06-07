@@ -1,13 +1,28 @@
 <?php
 
-/* 
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
+/* dz9.php
+ * 
+ Задание dz_8.php переделать с помощью хранения информации в БД
+    Для категорий и городов сделать отдельные таблицы
+    Для каждого объявления использовать одну строку в БД
+
+    Затем сдаете задачу в планфиксе.
+    Затем выполняете всё с помощью модуля mysqli
+
+    Затем снова сдаете задачу в планфиксе.
  */
+
+$otladka=1;
+$otladka2=0;
 
 
 $project_root=$_SERVER['DOCUMENT_ROOT'];
+
+if ($otladka2) {
+echo '$project_root='.$project_root.'<br>';
+}
+
+
 $smarty_dir=$project_root.'/test/smarty/';
 
 // put full path to Smarty.class.php
@@ -48,6 +63,8 @@ $db_user='dz9';
 $db_name='dz9';
 $db_server='localhost';
 
+$mysql_last_id='';
+
 
 $conn = mysql_connect(
 $db_server, $db_user,$db_user)
@@ -59,7 +76,7 @@ mysql_query('SET NAMES utf8');
 
 
 /*
-Теперь в $cities то же, что я раньше объявлела в скрипте:
+Теперь в $cities то же, что я раньше объявляла в скрипте:
 
 $cities = array ( 'Новосибирск' => '641780',
     'Барабинск' => '641490',
@@ -137,7 +154,7 @@ $subcategory=array();
 
 
 /*
-через файлы
+через бд
 */
 
 
@@ -149,19 +166,47 @@ unlink('ads.txt');
 }
 
 
-if (file_exists('ads.txt')) {
+
+$query='select * from ads order by id ASC';
+
+$result_query = mysql_query($query) or die('Запрос из ads не удался');
+
+if ($result = mysql_fetch_assoc($result_query)) {
+    
+$temp_array[]=$result;
+
+        if ($otladka2) {
+            echo '$temp_array после 1 строки запроса=\n';
+            var_dump($temp_array);
+        }
+
+
+
+while ($result = mysql_fetch_assoc($result_query)) {
+    $temp_array[]=$result;
+    
+            if ($otladka2) {
+            echo '$temp_array после while c 2 строки запроса=\n';
+            var_dump($temp_array);
+        }
+    }
+}
+
+
+/*if (file_exists('ads.txt')) {
     $ads_t=file_get_contents('ads.txt');
     $temp_array=unserialize($ads_t);
     
     $ads_h=fopen($ads_f,'r+');
 
-    }
+    } */
+
 else {
 
 
-$ads_h=fopen($ads_f,'w+');
+/*$ads_h=fopen($ads_f,'w+');
 $ads_t='a:0:{}';
-fwrite($ads_h,$ads_t);
+fwrite($ads_h,$ads_t);*/
 $temp_array=array();
 
         }
@@ -173,18 +218,80 @@ $temp_array=array();
 if (isset($_POST['form'])) {
     if ($_POST['form']=="Записать изменения") {
 // сохранить элемент
-$temp_array[$_GET['id']]=$_POST;
-$ads_t=serialize($temp_array);
+        
+//$temp_array[$_GET['id']]=$_POST;
+
+
+/*$ads_t=serialize($temp_array);
         fseek($ads_h,0);
-        fwrite($ads_h,$ads_t);
+        fwrite($ads_h,$ads_t); */
+
+// записать изменение в базу
+
+if (isset($_POST['allow_mails'])) {
+            
+        $allow_mails=$_POST['allow_mails'];
+        }
+        
+        else {
+            
+            $allow_mails='0';
+            
+        }
+
+        //Изменили значение
+        
+        $query='UPDATE ads SET '.
+        'title="'.$_POST['title'].'", price="'.$_POST['price']. 
+        '", user_name="'.$_POST['seller_name'].'", email="'.$_POST['email'].
+        '", tel="'.$_POST['phone'].'", descr="'.$_POST['description'].
+        '", id_city="'.$_POST['location_id'].'", id_tube_station="'.$_POST['metro_id'].
+        '", id_subcategory="'.$_POST['category_id'].'", private="'.$_POST['private'].
+        '", send_to_email="'.$allow_mails.  
+        '" WHERE id='.$_GET['id'].';';
+        
+if ($otladka2) {
+                echo '<p><b>$query строка запроса= </b></p>';
+        var_dump($query);
+}
+        
+
+        $result_query = mysql_query($query) or die('Изменение не удалось');
+        
+        // обновляем в temp_array
+        
+        $query='select * from ads where ads.id='.$_GET["id"].';';
+
+$result_query = mysql_query($query) or die('Получение измененного элемента не удалось');        
+        
+if ($otladka2) {
+                echo '<p><b>$temp_array до вставки обновленного элемента= </b></p>';
+        var_dump($temp_array);
+}
 
 
+foreach ($temp_array as $key => $value) {
+    
+        if ($otladka2) {
+                echo '<p><b>$key= </b></p>';
+        var_dump($key);
+}
+    
+        if ($temp_array[$key]['id']==$_GET["id"]) {
+            
+            $temp_array[$key]=mysql_fetch_assoc($result_query);
+            
+        }
+    }
+       
+        
+        
 $_POST=null;
 }
     if ($_POST['form']=="Назад") {
 $_POST=null;
 unset($_GET);
-fclose($ads_h);
+//fclose($ads_h);
 header('Location:/test/'.$current_php_script.'.php');
 }
 }
@@ -192,19 +299,54 @@ header('Location:/test/'.$current_php_script.'.php');
 // если гет заполнен, значит запросили удаление или просмотр
 if (isset($_GET["id"])) {
     if (isset($_GET["del"])) {
-    if (isset($temp_array[$_GET["id"]])) {
-unset($temp_array[$_GET["id"]]);
+    //if (isset($temp_array[$_GET["id"]])) {
+
+
+$query='delete from ads where ads.id='.$_GET["id"].';';
+
+$result_query = mysql_query($query) or die('Удаление выбранного элемента не удалось');        
+        
+if ($otladka2) {
+                echo '<p><b>$temp_array до удаления элемента= </b></p>';
+        var_dump($temp_array);
+}
+
+
+foreach ($temp_array as $key => $value) {
+    
+        if ($otladka2) {
+                echo '<p><b>$key= </b></p>';
+        var_dump($key);
+}
+    
+        if ($temp_array[$key]['id']==$_GET["id"]) {
+            
+            unset($temp_array[$key]);
+            
+        }
+    }
+
+if ($otladka2) {
+                echo '<p><b>$temp_array после удаления элемента= </b></p>';
+        var_dump($temp_array);
+}        
+        
+        
+
 unset($_GET["id"]);
-$ads_t=  serialize($temp_array);
+
+
+/*$ads_t=  serialize($temp_array);
 
 
      
         fseek($ads_h,0);
         fwrite($ads_h,$ads_t);
    
-fclose($ads_h);
+fclose($ads_h); */
 header('Location:/test/'.$current_php_script.'.php');
-}
+
+
   
 
 }
@@ -214,23 +356,58 @@ header('Location:/test/'.$current_php_script.'.php');
         
         $id=$_GET['id'];
         $post_edit=1;
-        $checkedPrivate = ($temp_array[$id]['private']) ? 'checked' : '' ;
-        $checkedCompany = ($temp_array[$id]['private']) ? '' : 'checked' ;
-        $seller_name = $temp_array[$id]['seller_name'];
-        $email= $temp_array[$id]['email'];
         
-        if (isset($temp_array[$id]['allow_mails'])) { 
-            $checked_allow_mails='checked';
-            }
+        foreach ($temp_array as $value) {
+            
+            
+        if ($value['id']==$id) {
+            
+        if ($otladka2) {
+                echo '<p><b>var_dump($value)= </b></p>';
+        var_dump($value);
+}    
+            
+            
+            
+        if ($value['private']=='1') {
+            
+            $checkedPrivate = 'checked';
+            $checkedCompany = '';
+        }
         
-        $phone=$temp_array[$id]['phone'];
+        else {
+            
+                $checkedPrivate = '';
+            $checkedCompany = 'checked';
+            
+        }
         
-        $location_id=$temp_array[$id]['location_id'];
-        $tube_station_id=$temp_array[$id]['metro_id'];
-        $category_id=$temp_array[$id]['category_id'];
-        $title=$temp_array[$id]['title'];
-        $description=$temp_array[$id]['description'];
-        $price=$temp_array[$id]['price'];
+        $seller_name = $value['user_name'];
+        $email= $value['email'];
+        
+        if ($value['send_to_email']=='0' or $value['send_to_email']=='' ) {
+            
+            $checked_allow_mails = '';
+        }
+        
+        else {
+            
+            $checked_allow_mails = 'checked';
+            
+        }
+        
+ 
+        $phone=$value['tel'];
+        
+        $location_id=$value['id_city'];
+        $tube_station_id=$value['id_tube_station'];
+        $category_id=$value['id_subcategory'];
+        $title=$value['title'];
+        $description=$value['descr'];
+        $price=$value['price'];
+        }
+        
+        }
 
 }
 }
@@ -241,13 +418,89 @@ if (isset($_POST['main_form'])) {
 if ($_POST['main_form']=='Добавить') {
         
 
-        array_push($temp_array,$_POST);
+        //array_push($temp_array,$_POST);
+        
+    if ($otladka2) {
+                echo '<p><b>var_dump($_POST)= </b></p>';
+        var_dump($_POST);
+}
+    
+        // allow_mails приходит от формы только тогда, когда установлен checkbox
+        // а так вообще нет этой переменной, если он не установлен.
+        if (isset($_POST['allow_mails'])) {
+            
+        $allow_mails=$_POST['allow_mails'];
+        }
+        
+        else {
+            
+            $allow_mails='';
+            
+        }
 
+        //вставили значение
+        
+        $query='INSERT into ads '.
+        '(title, price, user_name, email, tel, descr, id_city, '.
+        'id_tube_station, id_subcategory, private, send_to_email) '.
+        'VALUES ("'.$_POST['title'].'", "'.$_POST['price'].'", "'.$_POST['seller_name'].'", "'
+        .$_POST['email'].'", "'.$_POST['phone'].'", "'.$_POST['description'].'", "'
+        .$_POST['location_id'].'", "'.$_POST['metro_id'].'", "'.$_POST['category_id'].'", "'
+        .$_POST['private'].'", "'.$allow_mails.'" );';
+        
+            if ($otladka2) {
+                echo '<p><b>var_dump($query)= </b></p>';
+        var_dump($query);
+        
+                        echo '<p><b>var_dump($temp_array)= </b></p>';
+        var_dump($temp_array);
+        
+}
+
+        $result_query = mysql_query($query) or die('Вставка в ads не удалась');
+        
+        
+
+        /*if (isset($_POST['allow_mails'])) {
+        
+         $query='INSERT into ads '.
+        '(sent_to_email) '.
+        'VALUES ('.$_POST['allow_mails'].')';
+
+        $result_query = mysql_query($query) or die('Вставка allow_mails не удалась');       
+        
+        
+        } */
+        
+        /*
         $ads_t=serialize($temp_array);
 
         $ads_h=fopen($ads_f,'r+');
         fseek($ads_h,0);
         fwrite($ads_h,$ads_t);
+        */
+        
+        // добавляем к temp_array вставленное значение, для мгновенного отображения
+        
+        if ($otladka2) {
+            $mysql_last_id=mysql_insert_id();
+                echo '<p><b>$mysql_last_id= </b></p>';
+        var_dump($mysql_last_id);
+        }
+        
+        $mysql_last_id=mysql_insert_id();
+        $query='SELECT * from ads WHERE id='.$mysql_last_id.';';
+        $result_query = mysql_query($query) or die('Запрос из ads последнего объявления не удался');
+        $temp_array[]= mysql_fetch_assoc($result_query); 
+        
+        if ($otladka2) {
+            
+                echo '<p><b>$$temp_array= </b></p>';
+        var_dump($temp_array);
+        
+        }
+        
+
         
         
 
@@ -264,7 +517,7 @@ if (isset($temp_array)) {
 }
 
     
-fclose($ads_h); 
+//fclose($ads_h); 
 
 $smarty->assign('checkedPrivate',$checkedPrivate);
 $smarty->assign('checkedCompany',$checkedCompany);
@@ -292,7 +545,9 @@ $smarty->assign('current_php_script',$current_php_script);
 
 $smarty->display($current_php_script.'.tpl');
 
+if (!is_bool($result_query)) {
 mysql_free_result($result_query);
+}
 mysql_close($conn);
 
 ?>

@@ -3,7 +3,7 @@ session_start();
 ob_start(); 
 header('Content-type: text/html; charset=utf-8');
 
-$otladka=0;
+$otladka=1;
 $otladka2=0;
 $reset_session=0;
 $delete=0;
